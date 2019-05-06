@@ -9,6 +9,11 @@ class TwitterObjects {
 }
 
 /**
+ * [TwitterOAUTHException description]
+ */
+class TwitterOAUTHException extends Exception {}
+
+/**
  * [TwitterCURLRequest description]
  */
 class TwitterCURLRequest {
@@ -51,7 +56,11 @@ class TwitterCURLRequest {
    * @param [type] $key [description]
    * @param [type] $val [description]
    */
-  function addGetParameter($key, $val) {
+  function addGetParameter($key, $val=null) {
+    if ($val == null && is_array($key)) {
+      array_merge($this->get_parameters, $key);
+      return;
+    }
     $this->get_parameters[$key] = $val;
   }
   /**
@@ -59,7 +68,11 @@ class TwitterCURLRequest {
    * @param [type] $key [description]
    * @param [type] $val [description]
    */
-  function addHeaderParameter($key, $val) {
+  function addHeaderParameter($key, $val=null) {
+    if ($val == null && is_array($key)) {
+      array_merge($this->header_parameters, $key);
+      return;
+    }
     $this->header_parameters[$key] = $val;
   }
   /**
@@ -67,7 +80,11 @@ class TwitterCURLRequest {
    * @param [type] $key [description]
    * @param [type] $val [description]
    */
-  function addPostParameter($key, $val) {
+  function addPostParameter($key, $val=null) {
+    if ($val == null && is_array($key)) {
+      array_merge($this->post_parameters, $key);
+      return;
+    }
     $this->post_parameters[$key] = $val;
   }
   /**
@@ -138,6 +155,10 @@ class TwitterCURLRequest {
     }
     return $parameter_string;
   }
+  /**
+   * [stringify_post_parameters description]
+   * @return [type] [description]
+   */
   private function stringify_post_parameters() {
     $parameter_keys = array_keys($this->post_parameters);
     $last_key = end($parameter_keys);

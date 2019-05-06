@@ -12,6 +12,8 @@ class Twitter {
   const OAUTH_TOKEN      = "oauth_token";
   const OAUTH_VERIFIER   = "oauth_verifier";
 
+  const OAUTH_ERROR_MSG  = "Necessary Tokens not Set: (api_key, api_secret_key, access_token, or access_token_secret). All must be set.";
+
   private $authorize_url = "https://api.twitter.com/oauth/authorize";
 
   private $api_key;
@@ -48,7 +50,8 @@ class Twitter {
    * @return [type]           [description]
    */
   function requestToken($callback=null) {
-    $request = new TwitterCURLRequest("https://api.twitter.com/oauth/request_token", $this->api_secret_key, null, "POST", false);
+    $request = new TwitterCURLRequest("https://api.twitter.com/oauth/request_token",
+      $this->api_secret_key, null, "POST", false);
     $request->addHeaderParameter(self::CONSUMER_KEY, $this->api_key);
     $request->addHeaderParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
     $request->addHeaderParameter(self::OAUTH_VERSION, "1.0");
@@ -70,7 +73,8 @@ class Twitter {
    * @return [type]                 [description]
    */
   function getAccessToken($oauth_token, $oauth_verifier) {
-    $request = new TwitterCURLRequest("https://api.twitter.com/oauth/access_token", $this->api_secret_key, null, "POST", false);
+    $request = new TwitterCURLRequest("https://api.twitter.com/oauth/access_token",
+      $this->api_secret_key, null, "POST", false);
     $request->addHeaderParameter(self::CONSUMER_KEY, $this->api_key);
     $request->addHeaderParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
     $request->addHeaderParameter(self::OAUTH_VERSION, "1.0");
@@ -78,7 +82,28 @@ class Twitter {
     $request->addGetParameter(self::OAUTH_VERIFIER, $oauth_verifier);
     return $request->execute();
   }
-  function tweet($tweet) {
+  function tweet($tweet, $params=null) {
+    if ($this->api_key == null || $this->api_secret_key == null ||
+    $this->access_token == null || $this->access_token_secret == null) {
+      throw new TwitterOAUTHException(self::OAUTH_ERROR_MSG);
+    }
+    $request = new TwitterCURLRequest("https://api.twitter.com/1.1/statuses/update.json",
+      $this->api_secret_key, $this->access_token_secret, "POST", false);
+    $request->addHeaderParameter(self::CONSUMER_KEY, $this->api_key);
+    $request->addHeaderParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
+    $request->addHeaderParameter(self::OAUTH_VERSION, "1.0");
+    $request->addHeaderParameter(self::OAUTH_TOKEN, $this->access_token);
+    $request->addPostParameter("status", $tweet);
+    if ($params != null && $this->is_assoc($params)) $request->addPostParameter($params);
+    return $request->execute();
+  }
+  /**
+   * [is_assoc description]
+   * @param  [type]  $arr [description]
+   * @return boolean      [description]
+   */
+  private function is_assoc($arr) {
+    return array_keys($arr) !== range(0, count($arr) - 1);
   }
 }
 ?>
