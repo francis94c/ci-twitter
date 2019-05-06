@@ -10,6 +10,7 @@ class Twitter {
   const OAUTH_VERSION    = "oauth_version";
   const OAUTH_CALLBACK   = "oauth_callback";
   const OAUTH_TOKEN      = "oauth_token";
+  const OAUTH_VERIFIER   = "oauth_verifier";
 
   private $authorize_url = "https://api.twitter.com/oauth/authorize";
 
@@ -62,8 +63,22 @@ class Twitter {
   function getAuthorizeUrl($oauth_token) {
     return $this->authorize_url . "?" . self::OAUTH_TOKEN . "=$oauth_token";
   }
+  /**
+   * [getAccessToken description]
+   * @param  [type] $oauth_token    [description]
+   * @param  [type] $oauth_verifier [description]
+   * @return [type]                 [description]
+   */
+  function getAccessToken($oauth_token, $oauth_verifier) {
+    $request = new TwitterCURLRequest("https://api.twitter.com/oauth/access_token", $this->api_secret_key, null, "POST", false);
+    $request->addHeaderParameter(self::CONSUMER_KEY, $this->api_key);
+    $request->addHeaderParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
+    $request->addHeaderParameter(self::OAUTH_VERSION, "1.0");
+    $request->addHeaderParameter(self::OAUTH_TOKEN, $oauth_token);
+    $request->addGetParameter(self::OAUTH_VERIFIER, $oauth_verifier);
+    return $request->execute();
+  }
   function tweet($tweet) {
-    
   }
 }
 ?>
