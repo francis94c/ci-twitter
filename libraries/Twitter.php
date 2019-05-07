@@ -116,13 +116,38 @@ class Twitter {
       throw new TwitterOAUTHException(self::OAUTH_ERROR_MSG);
     }
     $request = new TwitterCURLRequest("https://api.twitter.com/1.1/statuses/update.json",
-      $this->api_secret_key, $this->access_token_secret, "POST", false);
+      $this->api_secret_key, $this->access_token_secret, "POST");
     $request->addHeaderParameter(self::CONSUMER_KEY, $this->api_key);
     $request->addHeaderParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
     $request->addHeaderParameter(self::OAUTH_VERSION, "1.0");
     $request->addHeaderParameter(self::OAUTH_TOKEN, $this->access_token);
     $request->addPostParameter("status", $tweet);
     if ($params != null && $this->is_assoc($params)) $request->addPostParameter($params);
+    return $request->execute();
+  }
+  /**
+   * [getCredentials description]
+   * @param  [type]  $oauth_token        [description]
+   * @param  [type]  $oauth_token_secret [description]
+   * @param  boolean $include_email      [description]
+   * @param  [type]  $params             [description]
+   * @return [type]                      [description]
+   */
+  function getCredentials($oauth_token=null, $oauth_token_secret=null, $include_email=true, $params=null) {
+    $oauth_token = $oauth_token != null ? $oauth_token : $this->access_token;
+    $oauth_token_secret = $oauth_token_secret != null ? $oauth_token_secret : $this->access_token_secret;
+    if ($this->api_key == null || $this->api_secret_key == null ||
+    $oauth_token == null || $oauth_token_secret == null) {
+      throw new TwitterOAUTHException(self::OAUTH_ERROR_MSG);
+    }
+    $request = new TwitterCURLRequest("https://api.twitter.com/1.1/account/verify_credentials.json",
+      $this->api_secret_key, $oauth_token_secret, "GET", false);
+    $request->addHeaderParameter(self::CONSUMER_KEY, $this->api_key);
+    $request->addHeaderParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
+    $request->addHeaderParameter(self::OAUTH_VERSION, "1.0");
+    $request->addHeaderParameter(self::OAUTH_TOKEN, $oauth_token);
+    $request->addGetParameter("include_email", $include_email ? "true" : "false");
+    if ($params != null) $request->addGetParameter($params);
     return $request->execute();
   }
   /**
