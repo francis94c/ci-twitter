@@ -45,6 +45,34 @@ class Twitter {
     if (isset($params["verify_host"])) $this->verify_host = $params["verify_host"];
   }
   /**
+   * [setAccessToken description]
+   * @param [type] $access_token [description]
+   */
+  function setAccessToken($access_token) {
+    $this->access_token = $access_token;
+  }
+  /**
+   * [setAccessTokenSecret description]
+   * @param [type] $access_token_secret [description]
+   */
+  function setAccessTokenSecret($access_token_secret) {
+    $this->access_token_secret = $access_token_secret;
+  }
+  /**
+   * [setApiKey description]
+   * @param [type] $api_key [description]
+   */
+  function setApiKey($api_key) {
+    $this->api_key = $api_key;
+  }
+  /**
+   * [setApiKeySecret description]
+   * @param [type] $api_secret_key [description]
+   */
+  function setApiKeySecret($api_secret_key) {
+    $this->api_secret_key = $api_secret_key;
+  }
+  /**
    * [requestToken description]
    * @param  [type] $callback [description]
    * @return [type]           [description]
