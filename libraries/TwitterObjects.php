@@ -26,9 +26,9 @@ class TwitterCURLRequest {
   private $url;
 
   private $get_parameters    = array();
-  private $oauth_parameters = array();
+  private $oauth_parameters  = array();
   private $post_parameters   = array();
-  private $custom_headers    = array();
+  private $header_parameters = array();
   private $oauth_nonce;
   private $oauth_timestamp;
 
@@ -93,8 +93,8 @@ class TwitterCURLRequest {
    * @param [type] $key [description]
    * @param [type] $val [description]
    */
-  function addCustomHeader($key, $val) {
-    $this->custom_headers[$key] = $val;
+  function addHeaderParameter($key, $val) {
+    $this->header_parameters[$key] = $val;
   }
   /**
    * [setRequestMethod description]
@@ -131,8 +131,8 @@ class TwitterCURLRequest {
     if (count($this->oauth_parameters) > 0) {
       $header[] = 'Authorization: ' . $this->build_oauth_string();
     }
-    if (count($this->custom_headers) > 0) {
-      foreach ($this->custom_headers as $key => $value) {
+    if (count($this->header_parameters) > 0) {
+      foreach ($this->header_parameters as $key => $value) {
         $header[] = $key . ": " . $value;
       }
     }

@@ -127,7 +127,7 @@ class Twitter {
     }
     $request = new TwitterCURLRequest("https://api.twitter.com/oauth2/token",
       $this->api_secret_key, null, "POST", false);
-    $request->addCustomHeader("Authorization",
+    $request->addHeaderParameter("Authorization",
       "Basic " . base64_encode(rawurlencode($api_key) . ":" . rawurlencode($api_secret_key)));
     $request->addPostParameter("grant_type", "client_credentials");
     $response = $request->execute();
