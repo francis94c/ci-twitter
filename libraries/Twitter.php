@@ -83,9 +83,9 @@ class Twitter {
   function requestToken($callback=null) {
     $request = new TwitterCURLRequest("https://api.twitter.com/oauth/request_token",
       $this->api_secret_key, null, "POST", false);
-    $request->addHeaderParameter(self::CONSUMER_KEY, $this->api_key);
-    $request->addHeaderParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
-    $request->addHeaderParameter(self::OAUTH_VERSION, "1.0");
+    $request->addOauthParameter(self::CONSUMER_KEY, $this->api_key);
+    $request->addOauthParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
+    $request->addOauthParameter(self::OAUTH_VERSION, "1.0");
     if ($callback != null) $request->addPostParameter(self::OAUTH_CALLBACK, $callback);
     return $request->execute();
   }
@@ -106,10 +106,10 @@ class Twitter {
   function getAccessToken($oauth_token, $oauth_verifier, $verify_host=true) {
     $request = new TwitterCURLRequest("https://api.twitter.com/oauth/access_token",
       $this->api_secret_key, null, "POST", false);
-    $request->addHeaderParameter(self::CONSUMER_KEY, $this->api_key);
-    $request->addHeaderParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
-    $request->addHeaderParameter(self::OAUTH_VERSION, "1.0");
-    $request->addHeaderParameter(self::OAUTH_TOKEN, $oauth_token);
+    $request->addOauthParameter(self::CONSUMER_KEY, $this->api_key);
+    $request->addOauthParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
+    $request->addOauthParameter(self::OAUTH_VERSION, "1.0");
+    $request->addOauthParameter(self::OAUTH_TOKEN, $oauth_token);
     $request->addGetParameter(self::OAUTH_VERIFIER, $oauth_verifier);
     return $request->execute();
   }
@@ -147,10 +147,10 @@ class Twitter {
     }
     $request = new TwitterCURLRequest("https://api.twitter.com/1.1/statuses/update.json",
       $this->api_secret_key, $this->access_token_secret, "POST");
-    $request->addHeaderParameter(self::CONSUMER_KEY, $this->api_key);
-    $request->addHeaderParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
-    $request->addHeaderParameter(self::OAUTH_VERSION, "1.0");
-    $request->addHeaderParameter(self::OAUTH_TOKEN, $this->access_token);
+    $request->addOauthParameter(self::CONSUMER_KEY, $this->api_key);
+    $request->addOauthParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
+    $request->addOauthParameter(self::OAUTH_VERSION, "1.0");
+    $request->addOauthParameter(self::OAUTH_TOKEN, $this->access_token);
     $request->addPostParameter("status", $tweet);
     if ($params != null && $this->is_assoc($params)) $request->addPostParameter($params);
     return $request->execute();
@@ -172,10 +172,10 @@ class Twitter {
     }
     $request = new TwitterCURLRequest("https://api.twitter.com/1.1/account/verify_credentials.json",
       $this->api_secret_key, $oauth_token_secret, "GET", false);
-    $request->addHeaderParameter(self::CONSUMER_KEY, $this->api_key);
-    $request->addHeaderParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
-    $request->addHeaderParameter(self::OAUTH_VERSION, "1.0");
-    $request->addHeaderParameter(self::OAUTH_TOKEN, $oauth_token);
+    $request->addOauthParameter(self::CONSUMER_KEY, $this->api_key);
+    $request->addOauthParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
+    $request->addOauthParameter(self::OAUTH_VERSION, "1.0");
+    $request->addOauthParameter(self::OAUTH_TOKEN, $oauth_token);
     $request->addGetParameter("include_email", $include_email ? "true" : "false");
     if ($params != null) $request->addGetParameter($params);
     return $request->execute();

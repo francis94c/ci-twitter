@@ -26,7 +26,7 @@ class TwitterCURLRequest {
   private $url;
 
   private $get_parameters    = array();
-  private $header_parameters = array();
+  private $oauth_parameters = array();
   private $post_parameters   = array();
   private $custom_headers    = array();
   private $oauth_nonce;
@@ -69,12 +69,12 @@ class TwitterCURLRequest {
    * @param [type] $key [description]
    * @param [type] $val [description]
    */
-  function addHeaderParameter($key, $val=null) {
+  function addOauthParameter($key, $val=null) {
     if ($val == null && is_array($key)) {
-      array_merge($this->header_parameters, $key);
+      array_merge($this->oauth_parameters, $key);
       return;
     }
-    $this->header_parameters[$key] = $val;
+    $this->oauth_parameters[$key] = $val;
   }
   /**
    * [addPostParameter description]
@@ -115,9 +115,9 @@ class TwitterCURLRequest {
    * @return [type] [description]
    */
   function execute() {
-    if (count($this->header_parameters) > 0) {
+    if (count($this->oauth_parameters) > 0) {
       $base_string = $this->build_signature_base_string();
-      $this->header_parameters[self::OAUTH_SIGNATURE] = base64_encode(hash_hmac("sha1", $base_string, rawurlencode($this->consumer_secret) . "&" . ($this->token_secret != null ? rawurlencode($this->token_secret) : ""), true));
+      $this->oauth_parameters[self::OAUTH_SIGNATURE] = base64_encode(hash_hmac("sha1", $base_string, rawurlencode($this->consumer_secret) . "&" . ($this->token_secret != null ? rawurlencode($this->token_secret) : ""), true));
     }
     $this->ch = curl_init();
     curl_setopt($this->ch, CURLOPT_URL, $this->url . (count($this->get_parameters) > 0 ? $this->stringify_get_parameters() : ""));
@@ -128,8 +128,8 @@ class TwitterCURLRequest {
       curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
     }
     $header = array();
-    if (count($this->header_parameters) > 0) {
-      $header[] = 'Authorization: ' . $this->build_header_string();
+    if (count($this->oauth_parameters) > 0) {
+      $header[] = 'Authorization: ' . $this->build_oauth_string();
     }
     if (count($this->custom_headers) > 0) {
       foreach ($this->custom_headers as $key => $value) {
@@ -197,23 +197,23 @@ class TwitterCURLRequest {
     if ($this->oauth_nonce == null) {
       $this->oauth_nonce = base64_encode(random_string("alpha", 32));
       $this->oauth_timestamp = time();
-      $this->header_parameters[self::OAUTH_NONCE] = $this->oauth_nonce;
-      $this->header_parameters[self::OAUTH_TIMESTAMP] = $this->oauth_timestamp;
+      $this->oauth_parameters[self::OAUTH_NONCE] = $this->oauth_nonce;
+      $this->oauth_parameters[self::OAUTH_TIMESTAMP] = $this->oauth_timestamp;
     }
   }
   /**
    * [build_header_string description]
    * @return [type] [description]
    */
-  private function build_header_string() {
-    $string_header = "OAuth ";
-    for ($x = 0; $x < count($this->header_parameters); $x++) {
-      $string_header .= rawurlencode(array_keys($this->header_parameters)[$x]);
-      $string_header .= "=";
-      $string_header .= "\"" . rawurlencode(array_values($this->header_parameters)[$x]) . "\"";
-      if ($x != count($this->header_parameters) - 1) $string_header .= ", ";
+  private function build_oauth_string() {
+    $oauth_header = "OAuth ";
+    for ($x = 0; $x < count($this->oauth_parameters); $x++) {
+      $oauth_header .= rawurlencode(array_keys($this->oauth_parameters)[$x]);
+      $oauth_header .= "=";
+      $oauth_header .= "\"" . rawurlencode(array_values($this->oauth_parameters)[$x]) . "\"";
+      if ($x != count($this->oauth_parameters) - 1) $oauth_header .= ", ";
     }
-    return $string_header;
+    return $oauth_header;
   }
   /**
    * [build_signature_base_string description]
@@ -221,7 +221,7 @@ class TwitterCURLRequest {
    */
   private function build_signature_base_string() {
     $this->ready_request();
-    $parameters = array_merge($this->get_parameters, $this->header_parameters, $this->post_parameters);
+    $parameters = array_merge($this->get_parameters, $this->oauth_parameters, $this->post_parameters);
     ksort($parameters);
     $parameter_string = "";
     $parameter_keys = array_keys($parameters);
