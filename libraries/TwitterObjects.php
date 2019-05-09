@@ -28,6 +28,7 @@ class TwitterCURLRequest {
   private $get_parameters    = array();
   private $header_parameters = array();
   private $post_parameters   = array();
+  private $custom_headers    = array();
   private $oauth_nonce;
   private $oauth_timestamp;
 
@@ -88,6 +89,14 @@ class TwitterCURLRequest {
     $this->post_parameters[$key] = $val;
   }
   /**
+   * [addCustomHeader description]
+   * @param [type] $key [description]
+   * @param [type] $val [description]
+   */
+  function addCustomHeader($key, $val) {
+    $this->custom_headers[$key] = $val;
+  }
+  /**
    * [setRequestMethod description]
    * @param string $request_method [description]
    */
@@ -106,8 +115,10 @@ class TwitterCURLRequest {
    * @return [type] [description]
    */
   function execute() {
-    $base_string = $this->build_signature_base_string();
-    $this->header_parameters[self::OAUTH_SIGNATURE] = base64_encode(hash_hmac("sha1", $base_string, rawurlencode($this->consumer_secret) . "&" . ($this->token_secret != null ? rawurlencode($this->token_secret) : ""), true));
+    if (count($this->header_parameters) > 0) {
+      $base_string = $this->build_signature_base_string();
+      $this->header_parameters[self::OAUTH_SIGNATURE] = base64_encode(hash_hmac("sha1", $base_string, rawurlencode($this->consumer_secret) . "&" . ($this->token_secret != null ? rawurlencode($this->token_secret) : ""), true));
+    }
     $this->ch = curl_init();
     curl_setopt($this->ch, CURLOPT_URL, $this->url . (count($this->get_parameters) > 0 ? $this->stringify_get_parameters() : ""));
     curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
@@ -116,14 +127,23 @@ class TwitterCURLRequest {
       curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, false);
       curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
     }
-    curl_setopt($this->ch, CURLOPT_HTTPHEADER, array('Authorization: ' . $this->build_header_string()));
+    $header = array();
+    if (count($this->header_parameters) > 0) {
+      $header[] = 'Authorization: ' . $this->build_header_string();
+    }
+    if (count($this->custom_headers) > 0) {
+      foreach ($this->custom_headers as $key => $value) {
+        $header[] = $key . ": " . $value;
+      }
+    }
+    curl_setopt($this->ch, CURLOPT_HTTPHEADER, $header);
     curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->stringify_post_parameters());
     $data = curl_exec($this->ch);
     $http_code = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
     curl_close($this->ch);
     if ($http_code != 200) return false;
     $this->last_response = $this->objectify($data);
-    return $this->last_response != null ? $this->last_response : false;
+    return $this->last_response;
   }
   /**
    * [objectify description]

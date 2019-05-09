@@ -5,14 +5,15 @@ class Twitter {
 
   const PACKAGE          = "francis94c/ci-twitter";
 
-  const CONSUMER_KEY     = "oauth_consumer_key";
-  const SIGNATURE_METHOD = "oauth_signature_method";
-  const OAUTH_VERSION    = "oauth_version";
-  const OAUTH_CALLBACK   = "oauth_callback";
-  const OAUTH_TOKEN      = "oauth_token";
-  const OAUTH_VERIFIER   = "oauth_verifier";
+  const CONSUMER_KEY        = "oauth_consumer_key";
+  const SIGNATURE_METHOD    = "oauth_signature_method";
+  const OAUTH_VERSION       = "oauth_version";
+  const OAUTH_CALLBACK      = "oauth_callback";
+  const OAUTH_TOKEN         = "oauth_token";
+  const OAUTH_VERIFIER      = "oauth_verifier";
 
-  const OAUTH_ERROR_MSG  = "Necessary Tokens not Set: (api_key, api_secret_key, access_token, or access_token_secret). All must be set.";
+  const OAUTH_ERROR_MSG     = "Necessary Tokens not Set: (api_key, api_secret_key, access_token, or access_token_secret). All must be set.";
+  const API_OAUTH_ERROR_MSG = "API KEY and API_KEY secret not set.";
 
   private $authorize_url = "https://api.twitter.com/oauth/authorize";
 
@@ -23,6 +24,8 @@ class Twitter {
   private $access_token_secret;
 
   private $verify_host;
+
+  private $last_response;
 
   private $ci;
 
@@ -100,7 +103,7 @@ class Twitter {
    * @param  [type] $oauth_verifier [description]
    * @return [type]                 [description]
    */
-  function getAccessToken($oauth_token, $oauth_verifier) {
+  function getAccessToken($oauth_token, $oauth_verifier, $verify_host=true) {
     $request = new TwitterCURLRequest("https://api.twitter.com/oauth/access_token",
       $this->api_secret_key, null, "POST", false);
     $request->addHeaderParameter(self::CONSUMER_KEY, $this->api_key);
@@ -110,6 +113,33 @@ class Twitter {
     $request->addGetParameter(self::OAUTH_VERIFIER, $oauth_verifier);
     return $request->execute();
   }
+  /**
+   * [generateBearerToken description]
+   * @param  [type] $api_key        [description]
+   * @param  [type] $api_secret_key [description]
+   * @return [type]                 [description]
+   */
+  function generateBearerToken($api_key=null, $api_secret_key=null) {
+    $api_key = $api_key != null ? $api_key : $this->api_key;
+    $api_secret_key = $api_secret_key != null ? $api_secret_key : $this->api_secret_key;
+    if ($api_key == null || $api_secret_key == null) {
+      throw new TwitterOAUTHException(self::API_OAUTH_ERROR_MSG);
+    }
+    $request = new TwitterCURLRequest("https://api.twitter.com/oauth2/token",
+      $this->api_secret_key, null, "POST", false);
+    $request->addCustomHeader("Authorization",
+      "Basic " . base64_encode(rawurlencode($api_key) . ":" . rawurlencode($api_secret_key)));
+    $request->addPostParameter("grant_type", "client_credentials");
+    $response = $request->execute();
+    if ($response["token_type"] == "bearer") return $response["access_token"];
+    return null;
+  }
+  /**
+   * [tweet description]
+   * @param  [type] $tweet  [description]
+   * @param  [type] $params [description]
+   * @return [type]         [description]
+   */
   function tweet($tweet, $params=null) {
     if ($this->api_key == null || $this->api_secret_key == null ||
     $this->access_token == null || $this->access_token_secret == null) {
