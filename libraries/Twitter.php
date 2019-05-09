@@ -135,6 +135,28 @@ class Twitter {
     return null;
   }
   /**
+   * [invalidateBearerToken description]
+   * @param  [type] $bearer_token   [description]
+   * @param  [type] $api_key        [description]
+   * @param  [type] $api_secret_key [description]
+   * @return [type]                 [description]
+   */
+  function invalidateBearerToken($bearer_token, $api_key=null, $api_secret_key=null) {
+    $api_key = $api_key != null ? $api_key : $this->api_key;
+    $api_secret_key = $api_secret_key != null ? $api_secret_key : $this->api_secret_key;
+    if ($api_key == null || $api_secret_key == null) {
+      throw new TwitterOAUTHException(self::API_OAUTH_ERROR_MSG);
+    }
+    $request = new TwitterCURLRequest("https://api.twitter.com/oauth2/invalidate_token",
+      $this->api_secret_key, null, "POST", false);
+    $request->addHeaderParameter("Authorization",
+      "Basic " . base64_encode(rawurlencode($api_key) . ":" . rawurlencode($api_secret_key)));
+    $request->addPostParameter("access_token", $bearer_token);
+    $response = $request->execute();
+    $this->last_response = $request->getLastResponse();
+    return $response != null && isset($response["access_token"]) && $response["access_token"] == $bearer_token;
+  }
+  /**
    * [tweet description]
    * @param  [type] $tweet  [description]
    * @param  [type] $params [description]

@@ -111,6 +111,13 @@ class TwitterCURLRequest {
     $this->url = $url;
   }
   /**
+   * [getLastResponse description]
+   * @return [type] [description]
+   */
+  function getLastResponse() {
+    return $this->last_response;
+  }
+  /**
    * [execute description]
    * @return [type] [description]
    */
@@ -139,6 +146,7 @@ class TwitterCURLRequest {
     curl_setopt($this->ch, CURLOPT_HTTPHEADER, $header);
     curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->stringify_post_parameters());
     $data = curl_exec($this->ch);
+    $this->last_response = $this->objectify($data);
     $http_code = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
     curl_close($this->ch);
     if ($http_code != 200) return false;
