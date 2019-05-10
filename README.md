@@ -21,14 +21,35 @@ From anywhere you can access the ```CI``` instance
 ```php
 // Get the below from https://developer.twitter.com/en/apps
 $params = array(
-  "api_key" => "api_key_here",
-  "api_secret_key" => "api_secret_key_here",
-  "access_token" => "access_token_here",
-  "access_token_secret" => "access_token_secret_here"
+  "api_key"             => "api_key_here",
+  "api_secret_key"      => "api_secret_key_here",
+  "access_token"        => "access_token_here",
+  "access_token_secret" => "access_token_secret_here",
+  "verify_host"         => true
 );
 $this->load->splint("francis94c/ci-twitter", "+Twitter", $params, "twitter");
 ```
 
  OR Alternatively load with the below steps.
 
- - create a file ```twitter_config.php``` in your ```application/config``` folder.
+ * create a file ```twitter_config.php``` in your ```application/config``` folder.
+ * Add the below contents into the file created above.
+
+ ```php
+ <?php
+ defined('BASEPATH') OR exit('No direct script access allowed');
+
+ $config["twitter_config"] = array(
+   "api_key"             => "api_key_here",
+   "api_secret_key"      => "api_secret_key_here",
+   "access_token"        => "access_token_here",
+   "access_token_secret" => "access_token_secret_here",
+   "verify_host"         => true
+ )
+ ?>
+ ```
+* Then load with the single line of code.
+
+```php
+$this->load->package("francis94c/ci-twitter");
+```
