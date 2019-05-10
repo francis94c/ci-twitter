@@ -15,7 +15,7 @@ class Twitter {
   const OAUTH_ERROR_MSG     = "Necessary Tokens not Set: (api_key, api_secret_key, access_token, or access_token_secret). All must be set.";
   const API_OAUTH_ERROR_MSG = "API KEY and API_KEY secret not set.";
 
-  private $authorize_url = "https://api.twitter.com/oauth/authorize";
+  private $authorize_url    = "https://api.twitter.com/oauth/authorize";
 
   private $api_key;
   private $api_secret_key;
@@ -23,7 +23,7 @@ class Twitter {
   private $access_token;
   private $access_token_secret;
 
-  private $verify_host;
+  private $verify_host      = ENVIRONMENT != "development" ? true : false;
 
   private $last_response;
 
@@ -75,6 +75,17 @@ class Twitter {
   function setApiKeySecret($api_secret_key) {
     $this->api_secret_key = $api_secret_key;
   }
+  /**
+   * [setVerifyHost description]
+   * @param [type] $verify_host [description]
+   */
+  function setVerifyHost($verify_host) {
+    $this->verify_host = $verify_host;
+  }
+  /**
+   * [getLastResponse description]
+   * @return [type] [description]
+   */
   function getLastResponse() {
     return $this->last_response;
   }
@@ -85,7 +96,7 @@ class Twitter {
    */
   function requestToken($callback=null) {
     $request = new TwitterCURLRequest("https://api.twitter.com/oauth/request_token",
-      $this->api_secret_key, null, "POST", false);
+      $this->api_secret_key, null, "POST", $this->verify_host);
     $request->addOauthParameter(self::CONSUMER_KEY, $this->api_key);
     $request->addOauthParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
     $request->addOauthParameter(self::OAUTH_VERSION, "1.0");
@@ -108,9 +119,9 @@ class Twitter {
    * @param  [type] $oauth_verifier [description]
    * @return [type]                 [description]
    */
-  function getAccessToken($oauth_token, $oauth_verifier, $verify_host=true) {
+  function getAccessToken($oauth_token, $oauth_verifier) {
     $request = new TwitterCURLRequest("https://api.twitter.com/oauth/access_token",
-      $this->api_secret_key, null, "POST", false);
+      $this->api_secret_key, null, "POST", $this->verify_host);
     $request->addOauthParameter(self::CONSUMER_KEY, $this->api_key);
     $request->addOauthParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
     $request->addOauthParameter(self::OAUTH_VERSION, "1.0");
@@ -133,7 +144,7 @@ class Twitter {
       throw new TwitterOAUTHException(self::API_OAUTH_ERROR_MSG);
     }
     $request = new TwitterCURLRequest("https://api.twitter.com/oauth2/token",
-      $this->api_secret_key, null, "POST", false);
+      $this->api_secret_key, null, "POST", $this->verify_host);
     $request->addHeaderParameter("Authorization",
       "Basic " . base64_encode(rawurlencode($api_key) . ":" . rawurlencode($api_secret_key)));
     $request->addPostParameter("grant_type", "client_credentials");
@@ -156,7 +167,7 @@ class Twitter {
       throw new TwitterOAUTHException(self::API_OAUTH_ERROR_MSG);
     }
     $request = new TwitterCURLRequest("https://api.twitter.com/oauth2/invalidate_token",
-      $this->api_secret_key, null, "POST", false);
+      $this->api_secret_key, null, "POST", $this->verify_host);
     $request->addHeaderParameter("Authorization",
       "Basic " . base64_encode(rawurlencode($api_key) . ":" . rawurlencode($api_secret_key)));
     $request->addPostParameter("access_token", $bearer_token);
@@ -176,7 +187,7 @@ class Twitter {
       throw new TwitterOAUTHException(self::OAUTH_ERROR_MSG);
     }
     $request = new TwitterCURLRequest("https://api.twitter.com/1.1/statuses/update.json",
-      $this->api_secret_key, $this->access_token_secret, "POST");
+      $this->api_secret_key, $this->access_token_secret, "POST", $this->verify_host);
     $request->addOauthParameter(self::CONSUMER_KEY, $this->api_key);
     $request->addOauthParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
     $request->addOauthParameter(self::OAUTH_VERSION, "1.0");
@@ -203,7 +214,7 @@ class Twitter {
       throw new TwitterOAUTHException(self::OAUTH_ERROR_MSG);
     }
     $request = new TwitterCURLRequest("https://api.twitter.com/1.1/account/verify_credentials.json",
-      $this->api_secret_key, $oauth_token_secret, "GET", false);
+      $this->api_secret_key, $oauth_token_secret, "GET", $this->verify_host);
     $request->addOauthParameter(self::CONSUMER_KEY, $this->api_key);
     $request->addOauthParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
     $request->addOauthParameter(self::OAUTH_VERSION, "1.0");
