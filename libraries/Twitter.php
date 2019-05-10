@@ -23,6 +23,8 @@ class Twitter {
   private $access_token;
   private $access_token_secret;
 
+  private $bearer_token;
+
   private $verify_host      = ENVIRONMENT != "development" ? true : false;
 
   private $last_response;
@@ -45,6 +47,7 @@ class Twitter {
     if (isset($params["api_secret_key"])) $this->api_secret_key = $params["api_secret_key"];
     if (isset($params["access_token"])) $this->access_token = $params["access_token"];
     if (isset($params["access_token_secret"])) $this->access_token_secret = $params["access_token_secret"];
+    if (isset($params["bearer_token"])) $this->bearer_token = $params["bearer_token"];
     if (isset($params["verify_host"])) $this->verify_host = $params["verify_host"];
   }
   /**
@@ -74,6 +77,13 @@ class Twitter {
    */
   function setApiKeySecret($api_secret_key) {
     $this->api_secret_key = $api_secret_key;
+  }
+  /**
+   * [setBearerToken description]
+   * @param [type] $bearer_token [description]
+   */
+  function setBearerToken($bearer_token) {
+    $this->bearer_token = $bearer_token;
   }
   /**
    * [setVerifyHost description]
@@ -194,6 +204,31 @@ class Twitter {
     $request->addOauthParameter(self::OAUTH_TOKEN, $this->access_token);
     $request->addPostParameter("status", $tweet);
     if ($params != null && $this->is_assoc($params)) $request->addPostParameter($params);
+    $response = $request->execute();
+    $this->last_response = $request->getLastResponse();
+    return $response !== false;
+  }
+  /**
+   * [getUserTimeline description]
+   * @param  [type] $screen_name  [description]
+   * @param  [type] $params       [description]
+   * @param  [type] $bearer_token [description]
+   * @return [type]               [description]
+   */
+  function getUserTimeline($screen_name, $params=null, $bearer_token=null) {
+    if ($this->api_key == null || $this->api_secret_key == null) {
+      throw new TwitterOAUTHException(self::API_OAUTH_ERROR_MSG);
+    }
+    if ($bearer_token == null && $this->bearer_token == null) {
+      $bearer_token = $this->bearer_token = $this->generateBearerToken();
+    } else {
+      $bearer_token = $bearer_token == null ? $this->bearer_token : $bearer_token;
+    }
+    $request = new TwitterCURLRequest("https://api.twitter.com/1.1/statuses/user_timeline.json",
+      $this->api_secret_key, $this->access_token_secret, "GET", $this->verify_host);
+    $request->addGetParameter("screen_name", $screen_name);
+    $request->addHeaderParameter("Authorization", "Bearer " . $bearer_token);
+    if ($params != null && $this->is_assoc($params)) $request->addGetParameter($params);
     $response = $request->execute();
     $this->last_response = $request->getLastResponse();
     return $response !== false;
