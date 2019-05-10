@@ -116,7 +116,9 @@ class Twitter {
     $request->addOauthParameter(self::OAUTH_VERSION, "1.0");
     $request->addOauthParameter(self::OAUTH_TOKEN, $oauth_token);
     $request->addGetParameter(self::OAUTH_VERIFIER, $oauth_verifier);
-    return $request->execute();
+    $response = $request->execute();
+    $this->last_response = $request->getLastResponse();
+    return $response;
   }
   /**
    * [generateBearerToken description]
@@ -136,6 +138,7 @@ class Twitter {
       "Basic " . base64_encode(rawurlencode($api_key) . ":" . rawurlencode($api_secret_key)));
     $request->addPostParameter("grant_type", "client_credentials");
     $response = $request->execute();
+    $this->last_response = $request->getLastResponse();
     if ($response["token_type"] == "bearer") return $response["access_token"];
     return null;
   }
@@ -180,7 +183,9 @@ class Twitter {
     $request->addOauthParameter(self::OAUTH_TOKEN, $this->access_token);
     $request->addPostParameter("status", $tweet);
     if ($params != null && $this->is_assoc($params)) $request->addPostParameter($params);
-    return $request->execute();
+    $response = $request->execute();
+    $this->last_response = $request->getLastResponse();
+    return $response !== false;
   }
   /**
    * [getCredentials description]
@@ -205,7 +210,9 @@ class Twitter {
     $request->addOauthParameter(self::OAUTH_TOKEN, $oauth_token);
     $request->addGetParameter("include_email", $include_email ? "true" : "false");
     if ($params != null) $request->addGetParameter($params);
-    return $request->execute();
+    $response = $request->execute();
+    $this->last_response = $request->getLastResponse();
+    return $response;
   }
   /**
    * [is_assoc description]
