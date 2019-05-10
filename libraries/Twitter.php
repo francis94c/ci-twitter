@@ -75,6 +75,9 @@ class Twitter {
   function setApiKeySecret($api_secret_key) {
     $this->api_secret_key = $api_secret_key;
   }
+  function getLastResponse() {
+    return $this->last_response;
+  }
   /**
    * [requestToken description]
    * @param  [type] $callback [description]
@@ -87,7 +90,9 @@ class Twitter {
     $request->addOauthParameter(self::SIGNATURE_METHOD, "HMAC-SHA1");
     $request->addOauthParameter(self::OAUTH_VERSION, "1.0");
     if ($callback != null) $request->addPostParameter(self::OAUTH_CALLBACK, $callback);
-    return $request->execute();
+    $response = $request->execute();
+    $this->last_response = $request->getLastResponse();
+    return $response;
   }
   /**
    * [getAuthorizeUrl description]

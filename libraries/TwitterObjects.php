@@ -150,7 +150,6 @@ class TwitterCURLRequest {
     $http_code = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
     curl_close($this->ch);
     if ($http_code != 200) return false;
-    $this->last_response = $this->objectify($data);
     return $this->last_response;
   }
   /**
