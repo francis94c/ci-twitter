@@ -35,7 +35,7 @@ class TwitterCURLRequest {
   private $consumer_secret;
   private $token_secret;
 
-  private $verify_host       = true;
+  private $verify_host;
 
   private $last_response;
 
