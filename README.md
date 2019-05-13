@@ -111,3 +111,5 @@ $this->twitter->tweet("A Sample Tweet Here.");
 ```
 
 This will return ```true``` if successful, or ```false``` otherwise.
+
+Please see the Wiki at <https://github.com/francis94c/ci-twitter/wiki> for proper documentation of package methods.
