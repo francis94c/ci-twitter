@@ -30,12 +30,14 @@ $params = array(
   "access_token_secret" => "access_token_secret_here",
   "verify_host"         => true
 );
+
 $this->load->splint("francis94c/ci-twitter", "+Twitter", $params, "twitter");
 
 // OR call initialize() with parameters.
 
 $this->load->splint("francis94c/ci-twitter", "+Twitter", null, "twitter");
 $this->twitter->initalize($params)
+
 ```
 
  OR Alternatively load with the below steps.
@@ -43,19 +45,17 @@ $this->twitter->initalize($params)
  * create a file ```twitter_config.php``` in your ```application/config``` folder.
  * Add the below contents into the file created above.
 
- ```php
- <?php
- defined('BASEPATH') OR exit('No direct script access allowed');
+```php
+defined('BASEPATH') OR exit('No direct script access allowed');
 
- $config["twitter_config"] = array(
-   "api_key"             => "api_key_here",
-   "api_secret_key"      => "api_secret_key_here",
-   "access_token"        => "access_token_here",
-   "access_token_secret" => "access_token_secret_here",
-   "verify_host"         => true
- )
- ?>
- ```
+$config["twitter_config"] = array(
+  "api_key"             => "api_key_here",
+  "api_secret_key"      => "api_secret_key_here",
+  "access_token"        => "access_token_here",
+  "access_token_secret" => "access_token_secret_here",
+  "verify_host"         => true
+)
+```
 * Then load with the single line of code.
 
 ```php
@@ -89,13 +89,12 @@ var_dump($access_token);
 //   "screen_name"        => "twitterapi"
 // )
 
-You can then use the oauth_token and oauth_token_secret for requests that need user authentication.
-**/
+// You can then use the oauth_token and oauth_token_secret for requests that need /////user authentication.
 ```
 
 ## Get a User's Info ##
 
-To get a user's info which is most likely needed just after the 3 staged authentication process when implementing a sign up or sign in with twitter, use the below code the request a user's credential using an ```oauth_token ``` and an ```oauth_token_secret```.
+To get a user's info which is most likely needed just after the 3 staged authentication process when implementing a sign up or sign in with twitter, use the below code the request a user's credential using an `oauth_token` and an `oauth_token_secret`.
 
 ```php
 $credentials = $this->twitter->getCredentials($oauth_token, $oauth_token_secret);
@@ -105,7 +104,7 @@ See https://developer.twitter.com/en/docs/accounts-and-users/manage-account-sett
 
 ## Tweet ##
 
-To tweet, you simply need an ```api_key```,``` api_secret_key```, ```access_token``` and an ```access_token_secret```
+To tweet, you simply need an `api_key`,` api_secret_key`, `access_token` and an `access_token_secret`
 
 Note that ```access_token``` and ```access_token_secret``` is also referred to as ```oauth_token``` and ```oauth_token_secret```. If you've already initialized the API with these values, you can go ahead and tweet with the below code.
 
@@ -113,6 +112,6 @@ Note that ```access_token``` and ```access_token_secret``` is also referred to a
 $this->twitter->tweet("A Sample Tweet Here.");
 ```
 
-This will return ```true``` if successful, or ```false``` otherwise.
+This will return `true` if successful, or `false` otherwise.
 
 Please see the Wiki at <https://github.com/francis94c/ci-twitter/wiki> for proper documentation of package methods.
