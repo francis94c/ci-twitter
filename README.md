@@ -1,4 +1,7 @@
-![Licence MIT](https://img.shields.io/github/license/francis94c/ci-twitter.svg) ![Splint](https://img.shields.io/badge/splint--ci-francis94c%2Fci--twitter-orange.svg) ![Lates Release](https://img.shields.io/github/release/francis94c/ci-twitter.svg) ![Commits](https://img.shields.io/github/last-commit/francis94c/ci-twitter.svg)
+![License MIT](https://img.shields.io/github/license/francis94c/ci-twitter.svg) ![Splint Identifier](https://splint.cynobit.com/shields/iconIdentifier/5TR612RF6Y) ![Splint Version](https://splint.cynobit.com/shields/iconVersion/5TR612RF6Y) ![Latest Release](https://img.shields.io/github/release/francis94c/ci-twitter.svg) ![Commits](https://img.shields.io/github/last-commit/francis94c/ci-twitter.svg)
+
+![Twitter Logo](https://help.twitter.com/content/dam/help-twitter/brand/logo.png)
+
 # ci-twitter
 This is a Twitter API wrapper for Code Igniter.
 
@@ -69,7 +72,7 @@ $token = $this->twitter->requestToken("https://call_back_url"); //  See https://
 if ($token["oauth_callback_confirmed"] == true) redirect($this->twitter->getAuthorizeUrl($token["oauth_token"]));
 ```
 
-This will redirect the user to the twitter authorization page. If Authorization is successful, a request will be made to the callback URL of your Twitter  App. 
+This will redirect the user to the twitter authorization page. If Authorization is successful, a request will be made to the callback URL of your Twitter  App.
 
 In the controller that handles the callback you can then get the access token with the returned ```oauth_token``` and the ```oauth_verifier``` with the code below
 
