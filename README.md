@@ -80,14 +80,14 @@ In the controller that handles the callback you can then get the access token wi
 $access_token = $this->twitter->getAccessToken($oauth_token, $oauth_verifier);
 
 var_dump($access_token);
-/**
-Output:
-array (
-  "oauth_token"        => "6253282-eWudHldSbIaelX7swmsiHImEL4KinwaGloHANdrY",
-  "oauth_token_secret" => "2EEfA6BG3ly3sR3RjE0IBSnlQu4ZrUzPiYKmrkVU",
-  "user_id"            => "6253282",
-  "screen_name"        => "twitterapi"
-)
+
+// Output:
+// array (
+//   "oauth_token"        => "6253282-eWudHldSbIaelX7swmsiHImEL4KinwaGloHANdrY",
+//   "oauth_token_secret" => "2EEfA6BG3ly3sR3RjE0IBSnlQu4ZrUzPiYKmrkVU",
+//   "user_id"            => "6253282",
+//   "screen_name"        => "twitterapi"
+// )
 
 You can then use the oauth_token and oauth_token_secret for requests that need user authentication.
 **/
